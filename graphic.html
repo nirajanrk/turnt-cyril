@@ -1,0 +1,102 @@
+<html>
+<head>
+<!--LEGEND https://developers.google.com/fusiontables/docs/samples/dynamic_styling_template -->
+<style>
+    #map-canvas {height: 400px; width: 300px;}
+</style>
+<script>
+var map;
+var shoot_table = '1sXHwlcFlYR7PdAJAsPieoqL8X4zXDuYnrgVgYs0';
+var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
+
+function initialize() {
+    map = new google.maps.Map(document.getElementById('map-canvas'), {
+        center: new google.maps.LatLng(38.553166,-121.375065),
+        zoom: 10,
+        mapTypeId: google.maps.MapTypeId.TERRAIN,
+        draggable: true,
+        mapTypeControl: false,
+        navigationControl: true,
+        panControl: false,
+        scrollwheel: false,
+        streetViewControl: false,
+        scaleControl: true,
+        zoomControl: true,
+        zoomControlOptions: {
+            style: google.maps.ZoomControlStyle.SMALL
+        },
+    });
+    
+    //set initial layer to the gov map
+    shooting = new google.maps.FusionTablesLayer({
+        query: {
+            select: 'geometry',
+            from: shoot_table,
+            where: "PNTCNT > 1"
+        }
+    });
+
+    murders = new google.maps.FusionTablesLayer({
+        query: {
+            select: 'longitude',
+            from: murder_table,
+            where: "Year = 2008",
+            or: "Year = 2009"
+        }
+    });
+
+    shooting.setMap(map);
+    murders.setMap(map);
+
+}
+//end write map
+
+    //begin change layer
+    function changeMap(searchString) {
+    var searchString = searchString;
+
+        if (searchString) {
+            murders.setOptions({
+                query: {
+                    select: 'longitude', 
+                    from: murder_table,
+                    where: "Year = " + searchString
+                }
+            });
+        } else {
+            
+            layer.setOptions({
+                query: {
+                    select: 'longitude',
+                    from: murder_table
+                }
+            });
+        }
+    }
+</script>
+
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+</head>
+
+<body onload="initialize()">
+<!-- <div style="margin-bottom: 10px;">
+    <select id="search-string" onchange="changeMap();">
+    <option value="">All</option>
+    <option value="2007">2007</option>
+    <option value="2008">2008</option>
+    <option value="2009">2009</option>
+    <option value="2010">2010</option>
+    <option value="2011">2011</option>
+    <option value="2012">2012</option>
+  </select>
+</div>-->
+
+<for name="years">
+    <input type="checkbox" name= 'year-check' onclick="changeMap();" value="">2007-2012</input>
+    <input type="checkbox" name= 'year-check' onclick="changeMap();" value="2007">2007</input>
+    <input type="checkbox" name= 'year-check' onclick="changeMap();" value="2008">2008</input>
+    <input type="checkbox" name= 'year-check' onclick="changeMap();" value="2009">2009</input>
+<div id="map-canvas"></div>
+</body>
+</html>
