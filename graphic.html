@@ -1,6 +1,7 @@
 <html>
 <head>
-<!--LEGEND https://developers.google.com/fusiontables/docs/samples/dynamic_styling_template -->
+<!--LEGEND https://developers.google.com/fusiontables/docs/samples/dynamic_styling_template
+HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-html -->
 <style>
     #map-canvas {height: 400px; width: 300px;}
 
@@ -31,29 +32,29 @@ var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
 var legendTitle = 'Shootings';
 
 var styles = {
-'Shootings': [{
+'PNTCNT': [{
   'min': 0,
-  'max': 3,
+  'max': 4,
   'color': '#cfe2f3'
 },
 {
   'min': 3,
-  'max': 13,
+  'max': 14,
   'color': '#9fc5e8'
 },
 {
   'min': 13,
-  'max': 27,
+  'max': 28,
   'color': '#6fa8dc'
 },
 {
   'min': 27,
-  'max': 46,
+  'max': 48,
   'color': '#3d85c6'
 },
  {
   'min': 46,
-  'max': 67,
+  'max': 68,
   'color': '#0b5394'
 }]};
 
@@ -93,25 +94,23 @@ function initialize() {
         }
     });
 
-    shooting.setMap(map);
     murders.setMap(map);
+    shooting.setMap(map);
 
-    for (column in styles) { break; }
-
-    applyStyle(map, shooting, column);
+    applyStyle(map, shooting, 'PNTCNT', styles);
 
     // Create the legend and display on the map
     var legend = document.createElement('div');
         legend.id = 'legend';
-        legendContent(legend);
+        legendContent(legend, styles, 'PNTCNT');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
 }
 //end write map
 
 // Apply style to layer
-function applyStyle(map, layer, column) {
-    var bucket = styles[column];
+function applyStyle(map, layer, column, style) {
+    var bucket = style[column];
     var styles = [];
 
     for (var i in bucket) {
@@ -125,6 +124,7 @@ function applyStyle(map, layer, column) {
         });
     }
     layer.set('styles', styles);
+    murders.setMap(map);
 }
 
 // Create the where clause
@@ -142,13 +142,13 @@ function generateWhere(columnName, low, high) {
 }
 
 // Generate the content for the legend
-function legendContent(legend) {
+function legendContent(legend, style, column) {
     var title = document.createElement('p');
     title.innerHTML = legendTitle;
     legend.appendChild(title);
 
-    for (var i in styles) {
-        var bucket = styles[i];
+    for (var i in style[column]) {
+        var bucket = style[column][i];
 
         var legendItem = document.createElement('div');
 
