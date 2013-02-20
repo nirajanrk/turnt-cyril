@@ -3,10 +3,10 @@
 <!--LEGEND https://developers.google.com/fusiontables/docs/samples/dynamic_styling_template
 HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-html -->
 <style>
-    #map-canvas {height: 400px; width: 300px;}
+    #map-canvas {height: 400px; width: 450px;}
 
     #legend {
-        background: #FFF;
+        background: #FFF ;
         padding: 10px;
         margin: 5px;
         font-size: 12px;
@@ -23,6 +23,14 @@ HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-htm
         width: 12px;
         margin-right: 3px;
         float: left;
+    }
+
+    #boxes {
+        padding: 5px;
+        margin: 5px;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+        top: 10px;
     }
 </style>
 <script>
@@ -105,6 +113,25 @@ function initialize() {
         legendContent(legend, styles, 'PNTCNT');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+    //create checkboxes for shootings, homicides
+    var boxes = document.createElement('div');
+    boxes.id = 'boxes';
+    var shootingBox = document.createElement('input');
+    shootingBox.setAttribute('type', 'radio');
+    shootingBox.setAttribute('id', 'shootings-check');
+    shootingBox.setAttribute('onclick', 'changeLayers()');
+    shootingBox.setAttribute('checked', true);
+    shootingBox.innerHTML='<div>Shootings</div>';
+    boxes.appendChild(shootingBox);
+    var homicidesBox = document.createElement('input');
+    homicidesBox.setAttribute('type', 'checkbox');
+    homicidesBox.setAttribute('id', 'homicides-check');
+    homicidesBox.setAttribute('onclick', 'changeLayers()');
+    homicidesBox.setAttribute('checked', true);
+    homicidesBox.innerHTML='Homicides';
+    boxes.appendChild(homicidesBox);
+    boxes.index = 1;
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(boxes);
 }
 //end write map
 
@@ -164,9 +191,8 @@ function legendContent(legend, style, column) {
         legend.appendChild(legendItem);
     }
 }
-
-//begin change layer
-function changeMap(searchString) {
+//begin change year
+function changeYear(searchString) {
 var searchString = searchString;
 
     if (searchString) {
@@ -188,7 +214,34 @@ var searchString = searchString;
     }
 }
 
+function changeLayers() {
+    //both checked
+    if (document.getElementById('shootings-check').checked & document.getElementById('homicides-check').checked)
+    {
+        shooting.setMap(map);
+        murders.setMap(map);
+        console.log('both');
+    }
+    else if (document.getElementById('shootings-check').checked == false & document.getElementById('homicides-check').checked) {
+        shooting.setMap();
+        murders.setMap(map);
+        console.log('just murders');
+    }
+    else if (document.getElementById('homicides-check').checked == false & document.getElementById('shootings-check').checked) {
+        murders.setMap();
+        shooting.setMap(map);
+        console.log('just shootings');
+    }
+    else {
+        murders.setMap();
+        shooting.setMap();
+        console.log('none');
+    }
+}
+
 </script>
+
+
 
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
@@ -207,11 +260,19 @@ var searchString = searchString;
   </select>
 </div>-->
 
-<for name="years">
-    <input type="checkbox" name= 'year-check' onclick="changeMap();" value="">2007-2012</input>
-    <input type="checkbox" name= 'year-check' onclick="changeMap(this.value);" value="2007">2007</input>
-    <input type="checkbox" name= 'year-check' onclick="changeMap(this.value);" value="2008">2008</input>
-    <input type="checkbox" name= 'year-check' onclick="changeMap(this.value);" value="2009">2009</input>
 <div id="map-canvas"></div>
+<form name="years">
+    <input type="radio" onclick="changeYear();" value="">2007-2012</input>
+    <input type="radio" onclick="changeYear(this.value);" value="2007">2007</input>
+    <input type="radio" onclick="changeYear(this.value);" value="2008">2008</input>
+    <input type="radio" onclick="changeYear(this.value);" value="2009">2009</input>
+    <input type="radio" onclick="changeYear(this.value);" value="2010">2010</input>
+    <input type="radio" onclick="changeYear(this.value);" value="2011">2011</input>
+    <input type="radio" onclick="changeYear(this.value);" value="2012">2012</input>
+<!--    <hr>
+    <input type="checkbox" id='shootings-check' onclick="changeLayers()" value="shootings" checked>Shootings</input>
+    <input type="checkbox" id='homicides-check' onclick="changeLayers()" value="homicides" checked>Homicides</input> -->
+</form>
+
 </body>
 </html>
