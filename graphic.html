@@ -35,12 +35,13 @@ HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-htm
 </style>
 <script>
 var map;
-var shoot_table = '1sXHwlcFlYR7PdAJAsPieoqL8X4zXDuYnrgVgYs0';
+//var shoot_table = '1sXHwlcFlYR7PdAJAsPieoqL8X4zXDuYnrgVgYs0';
+var shoot_table = '1wkd-SVDOYTcHPoO42m4xd5m6PqUSLn4q_muTD1M';
 var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
 var legendTitle = 'Shootings';
 
 var styles = {
-'PNTCNT': [{
+'pntcnt': [{
   'min': 0,
   'max': 4,
   'color': '#cfe2f3'
@@ -89,35 +90,32 @@ function initialize() {
         query: {
             select: 'geometry',
             from: shoot_table,
-            where: "PNTCNT > 1"
+            where: "pntcnt > 1"
         }
     });
 
     murders = new google.maps.FusionTablesLayer({
         query: {
             select: 'longitude',
-            from: murder_table,
-            where: "Year = 2008",
-            or: "Year = 2009"
+            from: murder_table
         }
     });
 
-    murders.setMap(map);
     shooting.setMap(map);
-
-    applyStyle(map, shooting, 'PNTCNT', styles);
+    murders.setMap(map);
+    applyStyle(map, shooting, 'pntcnt', styles);
 
     // Create the legend and display on the map
     var legend = document.createElement('div');
         legend.id = 'legend';
-        legendContent(legend, styles, 'PNTCNT');
+        legendContent(legend, styles, 'pntcnt');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
     //create checkboxes for shootings, homicides
     var boxes = document.createElement('div');
     boxes.id = 'boxes';
     var shootingBox = document.createElement('input');
-    shootingBox.setAttribute('type', 'radio');
+    shootingBox.setAttribute('type', 'checkbox');
     shootingBox.setAttribute('id', 'shootings-check');
     shootingBox.setAttribute('onclick', 'changeLayers()');
     shootingBox.setAttribute('checked', true);
@@ -261,18 +259,16 @@ function changeLayers() {
 </div>-->
 
 <div id="map-canvas"></div>
-<form name="years">
-    <input type="radio" onclick="changeYear();" value="">2007-2012</input>
-    <input type="radio" onclick="changeYear(this.value);" value="2007">2007</input>
-    <input type="radio" onclick="changeYear(this.value);" value="2008">2008</input>
-    <input type="radio" onclick="changeYear(this.value);" value="2009">2009</input>
-    <input type="radio" onclick="changeYear(this.value);" value="2010">2010</input>
-    <input type="radio" onclick="changeYear(this.value);" value="2011">2011</input>
-    <input type="radio" onclick="changeYear(this.value);" value="2012">2012</input>
+    <input type="radio" name="year-button" onclick="changeYear();" value="" checked>2007-2012</input>
+    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2007">2007</input>
+    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2008">2008</input>
+    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2009">2009</input>
+    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2010">2010</input>
+    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2011">2011</input>
+    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2012">2012</input>
 <!--    <hr>
     <input type="checkbox" id='shootings-check' onclick="changeLayers()" value="shootings" checked>Shootings</input>
     <input type="checkbox" id='homicides-check' onclick="changeLayers()" value="homicides" checked>Homicides</input> -->
-</form>
 
 </body>
 </html>
