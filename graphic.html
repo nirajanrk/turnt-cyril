@@ -3,7 +3,7 @@
 <!--LEGEND https://developers.google.com/fusiontables/docs/samples/dynamic_styling_template
 HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-html -->
 <style>
-    #map-canvas {height: 400px; width: 450px;}
+    #map-canvas {height: 400px; width: 900px;}
 
     #legend {
         background: #FFF ;
@@ -38,7 +38,6 @@ var map;
 //var shoot_table = '1sXHwlcFlYR7PdAJAsPieoqL8X4zXDuYnrgVgYs0';
 var shoot_table = '1wkd-SVDOYTcHPoO42m4xd5m6PqUSLn4q_muTD1M';
 var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
-var legendTitle = 'Shootings';
 
 var styles = {
 'pntcnt': [{
@@ -65,7 +64,176 @@ var styles = {
   'min': 46,
   'max': 68,
   'color': '#0b5394'
-}]};
+}],
+'column2007': [{
+  'min': 0,
+  'max': 4,
+  'color': '#cfe2f3'
+},
+{
+  'min': 3,
+  'max': 8,
+  'color': '#9fc5e8'
+},
+{
+  'min': 7,
+  'max': 11,
+  'color': '#6fa8dc'
+},
+{
+  'min': 10,
+  'max': 14,
+  'color': '#3d85c6'
+},
+ {
+  'min': 13,
+  'max': 17,
+  'color': '#0b5394'}],
+'count2008': [{
+  'min': 0,
+  'max': 4,
+  'color': '#cfe2f3'
+},
+{
+  'min': 3,
+  'max': 8,
+  'color': '#9fc5e8'
+},
+{
+  'min': 7,
+  'max': 11,
+  'color': '#6fa8dc'
+},
+{
+  'min': 10,
+  'max': 14,
+  'color': '#3d85c6'
+},
+ {
+  'min': 13,
+  'max': 17,
+  'color': '#0b5394'}],
+'count2009': [{
+  'min': 0,
+  'max': 4,
+  'color': '#cfe2f3'
+},
+{
+  'min': 3,
+  'max': 8,
+  'color': '#9fc5e8'
+},
+{
+  'min': 7,
+  'max': 11,
+  'color': '#6fa8dc'
+},
+{
+  'min': 10,
+  'max': 14,
+  'color': '#3d85c6'
+},
+ {
+  'min': 13,
+  'max': 17,
+  'color': '#0b5394'}],
+  'count2008': [{
+  'min': 0,
+  'max': 4,
+  'color': '#cfe2f3'
+},
+{
+  'min': 3,
+  'max': 8,
+  'color': '#9fc5e8'
+},
+{
+  'min': 7,
+  'max': 11,
+  'color': '#6fa8dc'
+},
+{
+  'min': 10,
+  'max': 14,
+  'color': '#3d85c6'
+},
+ {
+  'min': 13,
+  'max': 17,
+  'color': '#0b5394'}],
+  'count2010': [{
+  'min': 0,
+  'max': 4,
+  'color': '#cfe2f3'
+},
+{
+  'min': 3,
+  'max': 8,
+  'color': '#9fc5e8'
+},
+{
+  'min': 7,
+  'max': 11,
+  'color': '#6fa8dc'
+},
+{
+  'min': 10,
+  'max': 14,
+  'color': '#3d85c6'
+},
+ {
+  'min': 13,
+  'max': 17,
+  'color': '#0b5394'}],
+  'count2011': [{
+  'min': 0,
+  'max': 4,
+  'color': '#cfe2f3'
+},
+{
+  'min': 3,
+  'max': 8,
+  'color': '#9fc5e8'
+},
+{
+  'min': 7,
+  'max': 11,
+  'color': '#6fa8dc'
+},
+{
+  'min': 10,
+  'max': 14,
+  'color': '#3d85c6'
+},
+ {
+  'min': 13,
+  'max': 17,
+  'color': '#0b5394'}],
+  'count2012': [{
+  'min': 0,
+  'max': 4,
+  'color': '#cfe2f3'
+},
+{
+  'min': 3,
+  'max': 8,
+  'color': '#9fc5e8'
+},
+{
+  'min': 7,
+  'max': 11,
+  'color': '#6fa8dc'
+},
+{
+  'min': 10,
+  'max': 14,
+  'color': '#3d85c6'
+},
+ {
+  'min': 13,
+  'max': 17,
+  'color': '#0b5394'}]
+};
 
 function initialize() {
     map = new google.maps.Map(document.getElementById('map-canvas'), {
@@ -104,13 +272,8 @@ function initialize() {
     shooting.setMap(map);
     murders.setMap(map);
     applyStyle(map, shooting, 'pntcnt', styles);
+    createLegend('pntcnt');
 
-    // Create the legend and display on the map
-    var legend = document.createElement('div');
-        legend.id = 'legend';
-        legendContent(legend, styles, 'pntcnt');
-        legend.index = 1;
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
     //create checkboxes for shootings, homicides
     var boxes = document.createElement('div');
     boxes.id = 'boxes';
@@ -132,6 +295,7 @@ function initialize() {
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(boxes);
 }
 //end write map
+
 
 // Apply style to layer
 function applyStyle(map, layer, column, style) {
@@ -166,9 +330,25 @@ function generateWhere(columnName, low, high) {
     return whereClause.join('');
 }
 
+// Create the legend and display on the map
+function createLegend(column) {
+    var legend = document.createElement('div');
+    legend.id = 'legend';
+    legendContent(legend, styles, column);
+    legend.index = 1;
+    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+}
+
 // Generate the content for the legend
 function legendContent(legend, style, column) {
     var title = document.createElement('p');
+    if(column == 'pntcnt') {var legendTitle='2007-2012 shootings';}
+    else if (column == 'count2007') {var legendTitle='2007 shootings';}
+    else if (column == 'count2008') {var legendTitle='2008 shootings';}
+    else if (column == 'count2009') {var legendTitle='2009 shootings';}
+    else if (column == 'count2010') {var legendTitle='2010 shootings';}
+    else if (column == 'count2011') {var legendTitle='2011 shootings';}
+    else {var legendTitle='2012 shootings';}
     title.innerHTML = legendTitle;
     legend.appendChild(title);
 
@@ -192,15 +372,18 @@ function legendContent(legend, style, column) {
 //begin change year
 function changeYear(searchString) {
 var searchString = searchString;
-
+var column = 'count' + searchString;
     if (searchString) {
         shooting.setOptions({
             query: {
                 select: 'geometry',
                 from: shoot_table,
-                where: 'count'+searchString + '> 1'
+                where: column + '> 1'
             }
         });
+        applyStyle(map, shooting, column, styles);
+        legend.remove();
+        createLegend(column);
         murders.setOptions({
             query: {
                 select: 'longitude', 
@@ -209,7 +392,9 @@ var searchString = searchString;
             }
         })
     } else {
-        
+        applyStyle(map, shooting, 'pntcnt', styles);
+        legend.remove();
+        createLegend('pntcnt');
         murders.setOptions({
             query: {
                 select: 'longitude',
