@@ -194,13 +194,20 @@ function changeYear(searchString) {
 var searchString = searchString;
 
     if (searchString) {
+        shooting.setOptions({
+            query: {
+                select: 'geometry',
+                from: shoot_table,
+                where: 'count'+searchString + '> 1'
+            }
+        });
         murders.setOptions({
             query: {
                 select: 'longitude', 
                 from: murder_table,
                 where: "Year = " + searchString
             }
-        });
+        })
     } else {
         
         murders.setOptions({
