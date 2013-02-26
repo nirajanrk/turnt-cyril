@@ -5,7 +5,7 @@ HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-htm
 
 ISSUES: every year switch places points
 check box words
-info boxes
+info boxes content
 yearly graphs
 colors
 MURDER LOCATIONS
@@ -286,7 +286,9 @@ function initialize() {
     //INFO WINDOWS https://developers.google.com/fusiontables/docs/samples/change_infowindow_content
     google.maps.event.addListener(murders, 'click', function(dot) {
       dot.infoWindowHtml = '<strong>Date: </strong>' + dot.row["OccurenceStartDate"].value + "</br>" +
-      "<strong>Location: </strong>" + dot.row["OccurenceLocation"].value;
+      "<strong>Location: </strong>" + dot.row["OccurenceLocation"].value + "</br>" +
+      "<strong>City: </strong>" + dot.row["OccurenceCity"].value + "</br>" +
+      "<strong>Neighborhood </strong>" + dot.row["Neighborhood"].value;
       console.log(dot.row);
     });
     applyStyle(map, shooting, 'pntcnt', styles);
@@ -381,7 +383,9 @@ function legendContent(legend, style, column) {
         legendItem.appendChild(color);
 
         var minMax = document.createElement('span');
-        minMax.innerHTML = bucket.min + ' to ' + bucket.max;
+        var minNum = bucket.min + 1;
+        var maxNum = bucket.max - 1;
+        minMax.innerHTML = minNum + ' to ' + maxNum;
         legendItem.appendChild(minMax);
 
         legend.appendChild(legendItem);
@@ -413,6 +417,13 @@ var column = 'count' + searchString;
         applyStyle(map, shooting, 'pntcnt', styles);
         legend.remove();
         createLegend('pntcnt');
+        shooting.setOptions({
+            query: {
+                select: 'geometry',
+                from: shoot_table,
+                where: 'pntcnt > 1'
+            }
+        });
         murders.setOptions({
             query: {
                 select: 'longitude',
@@ -420,6 +431,7 @@ var column = 'count' + searchString;
             }
         });
     }
+    changeLayers();
 }
 
 function changeLayers() {
@@ -440,7 +452,7 @@ function changeLayers() {
         shooting.setMap(map);
         console.log('just shootings');
     }
-    else {
+    else if (document.getElementById('homicides-check').checked == false & document.getElementById('shootings-check').checked == false) {
         murders.setMap();
         shooting.setMap();
         console.log('none');
