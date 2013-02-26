@@ -3,12 +3,13 @@
 <!--LEGEND https://developers.google.com/fusiontables/docs/samples/dynamic_styling_template
 HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-html 
 
-ISSUES: every year switch places points
-check box words
-info boxes content
+ISSUES: *every year switch places points
+* check box words
 yearly graphs
 colors
 MURDER LOCATIONS
+  info boxes content
+    police/sheriff
 constrain panning
 -->
 <style>
@@ -35,11 +36,11 @@ constrain panning
     }
 
     #boxes {
+        background: #FFF ;
         padding: 5px;
         margin: 5px;
         font-size: 12px;
         font-family: Arial, sans-serif;
-        top: 10px;
     }
 </style>
 <script>
@@ -254,7 +255,7 @@ function initialize() {
         mapTypeControl: false,
         navigationControl: true,
         panControl: false,
-        scrollwheel: false,
+        //scrollwheel: false,
         streetViewControl: false,
         scaleControl: true,
         zoomControl: true,
@@ -288,7 +289,8 @@ function initialize() {
       dot.infoWindowHtml = '<strong>Date: </strong>' + dot.row["OccurenceStartDate"].value + "</br>" +
       "<strong>Location: </strong>" + dot.row["OccurenceLocation"].value + "</br>" +
       "<strong>City: </strong>" + dot.row["OccurenceCity"].value + "</br>" +
-      "<strong>Neighborhood </strong>" + dot.row["Neighborhood"].value;
+      "<strong>Neighborhood </strong>" + dot.row["Neighborhood"].value + "</br>" + 
+      dot.row["Latitude"].value + ", " + dot.row["Longitude"].value;
       console.log(dot.row);
     });
     applyStyle(map, shooting, 'pntcnt', styles);
@@ -297,25 +299,30 @@ function initialize() {
     //create checkboxes for shootings, homicides
     var boxes = document.createElement('div');
     boxes.id = 'boxes';
+    /*boxes.setAttribute('width', '300px');
     var shootingBox = document.createElement('input');
     shootingBox.setAttribute('type', 'checkbox');
     shootingBox.setAttribute('id', 'shootings-check');
     shootingBox.setAttribute('onclick', 'changeLayers()');
     shootingBox.setAttribute('checked', true);
-    shootingBox.innerHTML='<div>Shootings</div>';
+    var shootingBoxLabel = document.createElement('label');
+    shootingBoxLabel.setAttribute('for', 'shootings-check');
+    shootingBoxLabel.innerHTML='Shootings';
+    shootingBox.appendChild(shootingBoxLabel);
     boxes.appendChild(shootingBox);
     var homicidesBox = document.createElement('input');
     homicidesBox.setAttribute('type', 'checkbox');
     homicidesBox.setAttribute('id', 'homicides-check');
     homicidesBox.setAttribute('onclick', 'changeLayers()');
     homicidesBox.setAttribute('checked', true);
-    homicidesBox.innerHTML='Homicides';
-    boxes.appendChild(homicidesBox);
-    boxes.index = 1;
+    var homicidesBoxLabel=document.createTextNode('Homicides');
+    homicidesBox.appendChild(homicidesBoxLabel);
+    boxes.appendChild(homicidesBox);*/
+    boxes.innerHTML='<input type="checkbox" id="shootings-check" onclick="changeLayers()" checked="true"/><label for="shootings-check">Shootings</label></br><input type="checkbox" id="homicides-check" onclick="changeLayers()" checked="true"/><label for="homicides-check">Homicides</label>';
+    boxes.index = 1; 
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(boxes);
 }
 //end write map
-
 
 // Apply style to layer
 function applyStyle(map, layer, column, style) {
@@ -440,22 +447,18 @@ function changeLayers() {
     {
         shooting.setMap(map);
         murders.setMap(map);
-        console.log('both');
     }
     else if (document.getElementById('shootings-check').checked == false & document.getElementById('homicides-check').checked) {
         shooting.setMap();
         murders.setMap(map);
-        console.log('just murders');
     }
     else if (document.getElementById('homicides-check').checked == false & document.getElementById('shootings-check').checked) {
         murders.setMap();
         shooting.setMap(map);
-        console.log('just shootings');
     }
     else if (document.getElementById('homicides-check').checked == false & document.getElementById('shootings-check').checked == false) {
         murders.setMap();
         shooting.setMap();
-        console.log('none');
     }
 }
 
@@ -481,13 +484,20 @@ function changeLayers() {
 </div>-->
 
 <div id="map-canvas"></div>
-    <input type="radio" name="year-button" onclick="changeYear();" value="" checked>2007-2012</input>
-    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2007">2007</input>
-    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2008">2008</input>
-    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2009">2009</input>
-    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2010">2010</input>
-    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2011">2011</input>
-    <input type="radio" name="year-button" onclick="changeYear(this.value);" value="2012">2012</input>
+    <input type="radio" name="year-button" id="yearall" onclick="changeYear();" value="" checked/>
+      <label for="yearall">2007-2012</label>
+    <input type="radio" name="year-button" id="year2007" onclick="changeYear(this.value);" value="2007"/>
+      <label for="year2007">2007</label>
+    <input type="radio" name="year-button" id="year2008" onclick="changeYear(this.value);" value="2008"/>
+      <label for="year2008">2008</label>
+    <input type="radio" name="year-button" id="year2009" onclick="changeYear(this.value);" value="2009"/>
+      <label for="year2009">2009</label>
+    <input type="radio" name="year-button" id="year2010" onclick="changeYear(this.value);" value="2010"/>
+      <label for="year2010">2010</label>
+    <input type="radio" name="year-button" id="year2011" onclick="changeYear(this.value);" value="2011"/>
+      <label for="year2011">2011</label>
+    <input type="radio" name="year-button" id="year2012" onclick="changeYear(this.value);" value="2012"/>
+      <label for="year2012">2012</label>
 <!--    <hr>
     <input type="checkbox" id='shootings-check' onclick="changeLayers()" value="shootings" checked>Shootings</input>
     <input type="checkbox" id='homicides-check' onclick="changeLayers()" value="homicides" checked>Homicides</input> -->
