@@ -239,6 +239,7 @@ function initialize() {
     map = new google.maps.Map(document.getElementById('map-canvas'), {
         center: new google.maps.LatLng(38.553166,-121.375065),
         zoom: 10,
+        minZoom: 9,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         draggable: true,
         mapTypeControl: false,
@@ -272,6 +273,13 @@ function initialize() {
 
     shooting.setMap(map);
     murders.setMap(map);
+
+    //INFO WINDOWS https://developers.google.com/fusiontables/docs/samples/change_infowindow_content
+    google.maps.event.addListener(murders, 'click', function(dot) {
+      dot.infoWindowHtml = '<strong>Date: </strong>' + dot.row["OccurenceStartDate"].value + "</br>" +
+      "<strong>Location: </strong>" + dot.row["OccurenceLocation"].value;
+      console.log(dot.row);
+    });
     applyStyle(map, shooting, 'pntcnt', styles);
     createLegend('pntcnt');
 
