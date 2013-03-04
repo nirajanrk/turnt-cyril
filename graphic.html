@@ -11,9 +11,10 @@ MURDER LOCATIONS
   info boxes content
     police/sheriff
 constrain panning
+download the data
 -->
 <style>
-    #map-canvas {height: 400px; width: 900px;}
+    #map-canvas {height: 600px; width: 900px;}
 
     #legend {
         background: #FFF ;
@@ -40,14 +41,26 @@ constrain panning
         padding: 5px;
         margin: 5px;
         font-size: 12px;
-        font-family: Arial, sans-serif;
-    }
+        font-family: Arial, sans-serif; }
+
+    .box1 {float: left;
+          border-right: 4px solid #6C6;
+          border-top: 7px solid transparent;
+          border-bottom: 7px solid transparent;}
+    .box2 {float: left;
+          width: 7px;
+          height: 14px; }
+    .box3 {float: left;
+          border-left: 4px solid;
+          border-top: 7px solid transparent;
+          border-bottom: 7px solid transparent; }
 </style>
 <script>
 var map;
 //var shoot_table = '1sXHwlcFlYR7PdAJAsPieoqL8X4zXDuYnrgVgYs0';
 var shoot_table = '1wkd-SVDOYTcHPoO42m4xd5m6PqUSLn4q_muTD1M';
-var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
+//var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
+var murder_table = '1DHVs6OIS6SkKE38GXHmstMsPVacHIkkOqD-TJEc'; // feb. 27 update
 
 var styles = {
 'pntcnt': [{
@@ -247,8 +260,8 @@ var styles = {
 
 function initialize() {
     map = new google.maps.Map(document.getElementById('map-canvas'), {
-        center: new google.maps.LatLng(38.553166,-121.375065),
-        zoom: 10,
+        center: new google.maps.LatLng(38.57571551762013,-121.37025848144532),
+        zoom: 11,
         minZoom: 9,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         draggable: true,
@@ -286,11 +299,17 @@ function initialize() {
 
     //INFO WINDOWS https://developers.google.com/fusiontables/docs/samples/change_infowindow_content
     google.maps.event.addListener(murders, 'click', function(dot) {
-      dot.infoWindowHtml = '<strong>Date: </strong>' + dot.row["OccurenceStartDate"].value + "</br>" +
+      dot.infoWindowHtml = '<strong>Date: </strong>' + dot.row["ReportDate"].value + "</br>" +
       "<strong>Location: </strong>" + dot.row["OccurenceLocation"].value + "</br>" +
       "<strong>City: </strong>" + dot.row["OccurenceCity"].value + "</br>" +
       "<strong>Neighborhood </strong>" + dot.row["Neighborhood"].value + "</br>" + 
-      dot.row["Latitude"].value + ", " + dot.row["Longitude"].value;
+      dot.row["Beat"].value;
+      console.log(dot.row);
+    });
+    google.maps.event.addListener(shooting, 'mouseover', function() {
+      console.log(dot.row);
+    });
+    google.maps.event.addListener(shooting, 'mouseout', function() {
       console.log(dot.row);
     });
     applyStyle(map, shooting, 'pntcnt', styles);
@@ -299,25 +318,6 @@ function initialize() {
     //create checkboxes for shootings, homicides
     var boxes = document.createElement('div');
     boxes.id = 'boxes';
-    /*boxes.setAttribute('width', '300px');
-    var shootingBox = document.createElement('input');
-    shootingBox.setAttribute('type', 'checkbox');
-    shootingBox.setAttribute('id', 'shootings-check');
-    shootingBox.setAttribute('onclick', 'changeLayers()');
-    shootingBox.setAttribute('checked', true);
-    var shootingBoxLabel = document.createElement('label');
-    shootingBoxLabel.setAttribute('for', 'shootings-check');
-    shootingBoxLabel.innerHTML='Shootings';
-    shootingBox.appendChild(shootingBoxLabel);
-    boxes.appendChild(shootingBox);
-    var homicidesBox = document.createElement('input');
-    homicidesBox.setAttribute('type', 'checkbox');
-    homicidesBox.setAttribute('id', 'homicides-check');
-    homicidesBox.setAttribute('onclick', 'changeLayers()');
-    homicidesBox.setAttribute('checked', true);
-    var homicidesBoxLabel=document.createTextNode('Homicides');
-    homicidesBox.appendChild(homicidesBoxLabel);
-    boxes.appendChild(homicidesBox);*/
     boxes.innerHTML='<input type="checkbox" id="shootings-check" onclick="changeLayers()" checked="true"/><label for="shootings-check">Shootings</label></br><input type="checkbox" id="homicides-check" onclick="changeLayers()" checked="true"/><label for="homicides-check">Homicides</label>';
     boxes.index = 1; 
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(boxes);
@@ -383,11 +383,19 @@ function legendContent(legend, style, column) {
         var bucket = style[column][i];
 
         var legendItem = document.createElement('div');
-
-        var color = document.createElement('span');
-        color.setAttribute('class', 'color');
-        color.style.backgroundColor = bucket.color;
-        legendItem.appendChild(color);
+        //create legend hexagons
+        var color1 = document.createElement('span');
+        color1.setAttribute('class', 'box1');
+        color1.style.borderRightColor = bucket.color;
+        legendItem.appendChild(color1);
+        var color2 = document.createElement('span');
+        color2.setAttribute('class', 'box2');
+        color2.style.backgroundColor = bucket.color;
+        legendItem.appendChild(color2);
+        var color3 = document.createElement('span');
+        color3.setAttribute('class', 'box3');
+        color3.style.borderLeftColor = bucket.color;
+        legendItem.appendChild(color3);
 
         var minMax = document.createElement('span');
         var minNum = bucket.min + 1;
@@ -471,17 +479,6 @@ function changeLayers() {
 </head>
 
 <body onload="initialize()">
-<!-- <div style="margin-bottom: 10px;">
-    <select id="search-string" onchange="changeMap();">
-    <option value="">All</option>
-    <option value="2007">2007</option>
-    <option value="2008">2008</option>
-    <option value="2009">2009</option>
-    <option value="2010">2010</option>
-    <option value="2011">2011</option>
-    <option value="2012">2012</option>
-  </select>
-</div>-->
 
 <div id="map-canvas"></div>
     <input type="radio" name="year-button" id="yearall" onclick="changeYear();" value="" checked/>
