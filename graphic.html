@@ -21,8 +21,7 @@ download the data
         padding: 10px;
         margin: 5px;
         font-size: 12px;
-        font-family: Arial, sans-serif;
-    }
+        font-family: Arial, sans-serif; }
 
     #legend p { font-weight: bold; }
 
@@ -43,24 +42,31 @@ download the data
         font-size: 12px;
         font-family: Arial, sans-serif; }
 
-    .box1 {float: left;
-          border-right: 4px solid #6C6;
-          border-top: 7px solid transparent;
-          border-bottom: 7px solid transparent;}
-    .box2 {float: left;
-          width: 7px;
-          height: 14px; }
-    .box3 {float: left;
-          border-left: 4px solid;
-          border-top: 7px solid transparent;
-          border-bottom: 7px solid transparent; }
+    .box1 {
+        float: left;
+        border-right: 4px solid #6C6;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;}
+    .box2 {
+        float: left;
+        width: 7px;
+        height: 14px; }
+    .box3 {
+        float: left;
+        border-left: 4px solid;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent; }
+    .year-thumb{
+        width: 50px;
+        margin: 10px 0px 0px 10px;
+        border: 1px solid white;}
 </style>
 <script>
 var map;
 //var shoot_table = '1sXHwlcFlYR7PdAJAsPieoqL8X4zXDuYnrgVgYs0';
 var shoot_table = '1wkd-SVDOYTcHPoO42m4xd5m6PqUSLn4q_muTD1M';
 //var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
-var murder_table = '1DHVs6OIS6SkKE38GXHmstMsPVacHIkkOqD-TJEc'; // feb. 27 update
+var murder_table = '1kOpPLc7P1u0-c5BtD2cEPUyho36ujpBd495gPZY'; // feb. 27 update
 
 var styles = {
 'pntcnt': [{
@@ -299,26 +305,34 @@ function initialize() {
 
     //INFO WINDOWS https://developers.google.com/fusiontables/docs/samples/change_infowindow_content
     google.maps.event.addListener(murders, 'click', function(dot) {
-      dot.infoWindowHtml = '<strong>Date: </strong>' + dot.row["ReportDate"].value + "</br>" +
-      "<strong>Location: </strong>" + dot.row["OccurenceLocation"].value + "</br>" +
-      "<strong>City: </strong>" + dot.row["OccurenceCity"].value + "</br>" +
-      "<strong>Neighborhood </strong>" + dot.row["Neighborhood"].value + "</br>" + 
-      dot.row["Beat"].value;
+      dot.infoWindowHtml = dot.row["ReportDate"].value + "</br>" +
+      dot.row["OccurenceLocation"].value + ", " + dot.row["OccurenceCity"].value;
       console.log(dot.row);
     });
-    google.maps.event.addListener(shooting, 'mouseover', function() {
-      console.log(dot.row);
+
+    google.maps.event.addListener(shooting, 'mouseover', function(fEvent) {
+      var row = fEvent.row;
+      myHtml = 'mouseover:<br/>';
+      for (var x in row) {
+        if (row.hasOwnProperty(x)) {
+          myHtml += '<b>' + x + "</b>:" + row[x].value + "<br/>";
+        }
+      }
+      document.getElementById('info').innerHTML = myHtml;
+      
     });
-    google.maps.event.addListener(shooting, 'mouseout', function() {
-      console.log(dot.row);
+    google.maps.event.addListener(shooting, 'mouseout', function(fevt) {
+      document.getElementById('info').innerHTML = '';
+      
     });
+
     applyStyle(map, shooting, 'pntcnt', styles);
     createLegend('pntcnt');
 
     //create checkboxes for shootings, homicides
     var boxes = document.createElement('div');
     boxes.id = 'boxes';
-    boxes.innerHTML='<input type="checkbox" id="shootings-check" onclick="changeLayers()" checked="true"/><label for="shootings-check">Shootings</label></br><input type="checkbox" id="homicides-check" onclick="changeLayers()" checked="true"/><label for="homicides-check">Homicides</label>';
+    boxes.innerHTML='<input type="checkbox" id="homicides-check" onclick="changeLayers()" checked="true"/><label for="homicides-check">Homicides</label></br><input type="checkbox" id="shootings-check" onclick="changeLayers()" checked="true"/><label for="shootings-check">Shootings</label>';
     boxes.index = 1; 
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(boxes);
 }
@@ -410,7 +424,13 @@ function legendContent(legend, style, column) {
 function changeYear(searchString) {
 var searchString = searchString;
 var column = 'count' + searchString;
+var thumbs = document.getElementsByClassName('year-thumb');
+for (var i=0; i<thumbs.length; i++) {
+  thumbs[i].style.borderColor='white';
+}
     if (searchString) {
+      var thumb = searchString+'-thumb';
+      document.getElementById(thumb).style.borderColor='#0b5394';
         shooting.setOptions({
             query: {
                 select: 'geometry',
@@ -429,6 +449,8 @@ var column = 'count' + searchString;
             }
         })
     } else {
+      var thumb='all-thumb';
+      document.getElementById(thumb).style.borderColor='#0b5394';
         applyStyle(map, shooting, 'pntcnt', styles);
         legend.remove();
         createLegend('pntcnt');
@@ -472,8 +494,6 @@ function changeLayers() {
 
 </script>
 
-
-
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
 </head>
@@ -482,22 +502,24 @@ function changeLayers() {
 
 <div id="map-canvas"></div>
     <input type="radio" name="year-button" id="yearall" onclick="changeYear();" value="" checked/>
-      <label for="yearall">2007-2012</label>
+      <label for="yearall">2007-2012<img src='http://media.sacbee.com/smedia/2013/03/04/16/58/tWG65.St.4.PNG' class='year-thumb' id='all-thumb'/></label>
     <input type="radio" name="year-button" id="year2007" onclick="changeYear(this.value);" value="2007"/>
-      <label for="year2007">2007</label>
+      <label for="year2007">2007<img src="http://media.sacbee.com/smedia/2013/03/04/16/50/6utCz.St.4.PNG" class='year-thumb' id='2007-thumb'/></label>
     <input type="radio" name="year-button" id="year2008" onclick="changeYear(this.value);" value="2008"/>
-      <label for="year2008">2008</label>
+      <label for="year2008">2008<img src='http://media.sacbee.com/smedia/2013/03/04/16/52/cfu1W.St.4.PNG' class='year-thumb' id='2008-thumb'/></label>
     <input type="radio" name="year-button" id="year2009" onclick="changeYear(this.value);" value="2009"/>
-      <label for="year2009">2009</label>
+      <label for="year2009">2009<img src='http://media.sacbee.com/smedia/2013/03/04/16/53/fEg5f.St.4.PNG' class='year-thumb' id='2009-thumb'/></label>
     <input type="radio" name="year-button" id="year2010" onclick="changeYear(this.value);" value="2010"/>
-      <label for="year2010">2010</label>
+      <label for="year2010">2010<img src='http://media.sacbee.com/smedia/2013/03/04/16/54/1eQI9d.St.4.PNG' class='year-thumb' id='2010-thumb'/></label>
     <input type="radio" name="year-button" id="year2011" onclick="changeYear(this.value);" value="2011"/>
-      <label for="year2011">2011</label>
+      <label for="year2011">2011<img src='http://media.sacbee.com/smedia/2013/03/04/16/56/ywRv6.St.4.PNG' class='year-thumb' id='2011-thumb'/></label>
     <input type="radio" name="year-button" id="year2012" onclick="changeYear(this.value);" value="2012"/>
-      <label for="year2012">2012</label>
+      <label for="year2012">2012<img src='http://media.sacbee.com/smedia/2013/03/04/16/58/1tTUiQ.St.4.PNG' class='year-thumb' id='2012-thumb'/></label>
 <!--    <hr>
     <input type="checkbox" id='shootings-check' onclick="changeLayers()" value="shootings" checked>Shootings</input>
     <input type="checkbox" id='homicides-check' onclick="changeLayers()" value="homicides" checked>Homicides</input> -->
+
+<div id='info'></div>
 
 </body>
 </html>
