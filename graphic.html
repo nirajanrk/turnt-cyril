@@ -1,32 +1,15 @@
 <html>
 <head>
-<!--LEGEND https://developers.google.com/fusiontables/docs/samples/dynamic_styling_template
-HEXAGON http://stackoverflow.com/questions/3637613/hexagonal-shaped-cells-in-html 
-
-ISSUES: *every year switch places points
-* check box words
-yearly graphs
-colors
-MURDER LOCATIONS
-  info boxes content
-    police/sheriff
-constrain panning
-download the data
--->
 <style>
     #map-canvas {height: 600px; width: 900px;}
-
     #legend {
         background: #FFF ;
         padding: 10px;
         margin: 5px;
         font-size: 12px;
         font-family: Arial, sans-serif; }
-
     #legend p { font-weight: bold; }
-
     #legend div { padding-bottom: 5px; }
-
     .color {
         border: 1px solid;
         height: 12px;
@@ -34,14 +17,12 @@ download the data
         margin-right: 3px;
         float: left;
     }
-
     #boxes {
         background: #FFF ;
         padding: 5px;
         margin: 5px;
         font-size: 12px;
         font-family: Arial, sans-serif; }
-
     .box1 {
         float: left;
         border-right: 4px solid #6C6;
@@ -67,7 +48,6 @@ var map;
 var shoot_table = '1wkd-SVDOYTcHPoO42m4xd5m6PqUSLn4q_muTD1M';
 //var murder_table = '1jYDdtK84QVaPJ-HEdmTFLaLQGbWczXdtvRFMbQ0';
 var murder_table = '1kOpPLc7P1u0-c5BtD2cEPUyho36ujpBd495gPZY'; // feb. 27 update
-
 var styles = {
 'pntcnt': [{
   'min': 0,
@@ -263,7 +243,6 @@ var styles = {
   'max': 17,
   'color': '#0b5394'}]
 };
-
 function initialize() {
     map = new google.maps.Map(document.getElementById('map-canvas'), {
         center: new google.maps.LatLng(38.57571551762013,-121.37025848144532),
@@ -281,8 +260,7 @@ function initialize() {
         zoomControlOptions: {
             style: google.maps.ZoomControlStyle.SMALL
         },
-    });
-    
+    });   
     //set initial layer to the gov map
     shooting = new google.maps.FusionTablesLayer({
         query: {
@@ -292,24 +270,20 @@ function initialize() {
         },
         clickable: false
     });
-
     murders = new google.maps.FusionTablesLayer({
         query: {
             select: 'longitude',
             from: murder_table
         }
     });
-
     shooting.setMap(map);
     murders.setMap(map);
-
     //INFO WINDOWS https://developers.google.com/fusiontables/docs/samples/change_infowindow_content
     google.maps.event.addListener(murders, 'click', function(dot) {
       dot.infoWindowHtml = dot.row["ReportDate"].value + "</br>" +
       dot.row["OccurenceLocation"].value + ", " + dot.row["OccurenceCity"].value;
       console.log(dot.row);
     });
-
     google.maps.event.addListener(shooting, 'mouseover', function(fEvent) {
       var row = fEvent.row;
       myHtml = 'mouseover:<br/>';
@@ -325,10 +299,8 @@ function initialize() {
       document.getElementById('info').innerHTML = '';
       
     });
-
     applyStyle(map, shooting, 'pntcnt', styles);
     createLegend('pntcnt');
-
     //create checkboxes for shootings, homicides
     var boxes = document.createElement('div');
     boxes.id = 'boxes';
@@ -337,12 +309,10 @@ function initialize() {
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(boxes);
 }
 //end write map
-
 // Apply style to layer
 function applyStyle(map, layer, column, style) {
     var bucket = style[column];
     var styles = [];
-
     for (var i in bucket) {
         var style = bucket[i];
         styles.push({
@@ -356,7 +326,6 @@ function applyStyle(map, layer, column, style) {
     layer.set('styles', styles);
     murders.setMap(map);
 }
-
 // Create the where clause
 function generateWhere(columnName, low, high) {
     var whereClause = [];
@@ -370,7 +339,6 @@ function generateWhere(columnName, low, high) {
     whereClause.push(high);
     return whereClause.join('');
 }
-
 // Create the legend and display on the map
 function createLegend(column) {
     var legend = document.createElement('div');
@@ -379,7 +347,6 @@ function createLegend(column) {
     legend.index = 1;
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
 }
-
 // Generate the content for the legend
 function legendContent(legend, style, column) {
     var title = document.createElement('p');
@@ -392,10 +359,8 @@ function legendContent(legend, style, column) {
     else {var legendTitle='2012 shootings';}
     title.innerHTML = legendTitle;
     legend.appendChild(title);
-
     for (var i in style[column]) {
         var bucket = style[column][i];
-
         var legendItem = document.createElement('div');
         //create legend hexagons
         var color1 = document.createElement('span');
@@ -410,13 +375,11 @@ function legendContent(legend, style, column) {
         color3.setAttribute('class', 'box3');
         color3.style.borderLeftColor = bucket.color;
         legendItem.appendChild(color3);
-
         var minMax = document.createElement('span');
         var minNum = bucket.min + 1;
         var maxNum = bucket.max - 1;
         minMax.innerHTML = minNum + ' to ' + maxNum;
         legendItem.appendChild(minMax);
-
         legend.appendChild(legendItem);
     }
 }
@@ -470,7 +433,6 @@ for (var i=0; i<thumbs.length; i++) {
     }
     changeLayers();
 }
-
 function changeLayers() {
     //both checked
     if (document.getElementById('shootings-check').checked & document.getElementById('homicides-check').checked)
@@ -491,18 +453,13 @@ function changeLayers() {
         shooting.setMap();
     }
 }
-
 </script>
-
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-
 </head>
-
 <body onload="initialize()">
-
 <div id="map-canvas"></div>
     <input type="radio" name="year-button" id="yearall" onclick="changeYear();" value="" checked/>
-      <label for="yearall">2007-2012<img src='http://media.sacbee.com/smedia/2013/03/04/16/58/tWG65.St.4.PNG' class='year-thumb' id='all-thumb'/></label>
+      <label for="yearall">2007-2012<img src='http://media.sacbee.com/smedia/2013/03/04/16/58/tWG65.St.4.PNG' class='year-thumb' id='all-thumb' style='border-color: #0b5394'/></label>
     <input type="radio" name="year-button" id="year2007" onclick="changeYear(this.value);" value="2007"/>
       <label for="year2007">2007<img src="http://media.sacbee.com/smedia/2013/03/04/16/50/6utCz.St.4.PNG" class='year-thumb' id='2007-thumb'/></label>
     <input type="radio" name="year-button" id="year2008" onclick="changeYear(this.value);" value="2008"/>
@@ -515,11 +472,6 @@ function changeLayers() {
       <label for="year2011">2011<img src='http://media.sacbee.com/smedia/2013/03/04/16/56/ywRv6.St.4.PNG' class='year-thumb' id='2011-thumb'/></label>
     <input type="radio" name="year-button" id="year2012" onclick="changeYear(this.value);" value="2012"/>
       <label for="year2012">2012<img src='http://media.sacbee.com/smedia/2013/03/04/16/58/1tTUiQ.St.4.PNG' class='year-thumb' id='2012-thumb'/></label>
-<!--    <hr>
-    <input type="checkbox" id='shootings-check' onclick="changeLayers()" value="shootings" checked>Shootings</input>
-    <input type="checkbox" id='homicides-check' onclick="changeLayers()" value="homicides" checked>Homicides</input> -->
-
 <div id='info'></div>
-
 </body>
 </html>
